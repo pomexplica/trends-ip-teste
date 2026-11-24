@@ -8,8 +8,9 @@ jobs:
       fail-fast: false
       matrix:
         j: [0, 1, 2, 3, 4]
+        mode: [urllib, chrome]
     steps:
       - uses: actions/checkout@v4
       - run: pip install -q curl_cffi
       - run: curl -s https://api.ipify.org; echo
-      - run: J=${{ matrix.j }} python tls.py 30
+      - run: J=${{ matrix.j }} MODE=${{ matrix.mode }} SL=1.5 python tls.py 30

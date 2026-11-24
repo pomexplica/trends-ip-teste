@@ -31,7 +31,17 @@ def urllib_word(k):
 
 print("fase0 urllib:", [urllib_word(k) for k in ("previsao do tempo", "horoscopo", "jogo do bicho")]); sys.stdout.flush()
 
-s = cr.Session(impersonate="chrome")
+MODE=os.environ.get("MODE","chrome"); SL=float(os.environ.get("SL","0.4"))
+class U:
+    def __init__(s):
+        cj=http.cookiejar.CookieJar(); s.op=urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj)); s.op.addheaders=[("User-Agent","Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131 Safari/537.36")]
+    def get(s,u,timeout=30):
+        class R: pass
+        r=R()
+        try: x=s.op.open(u,timeout=timeout); r.status_code=x.status; r.text=x.read().decode()
+        except urllib.error.HTTPError as e: r.status_code=e.code; r.text=""
+        return r
+s = cr.Session(impersonate="chrome") if MODE=="chrome" else U()
 try: s.get("https://trends.google.com/trends/explore?geo=BR", timeout=30)
 except Exception as e: print("abertura", e)
 ok = 0; seq = []; falhas = 0; t0 = time.time()
@@ -50,6 +60,6 @@ for i, k in enumerate(words):
     if st == 200 and st2 == 200: ok += 1; falhas = 0
     else: falhas += 1
     if falhas >= 5: break
-    time.sleep(0.4)
-print(f"fase1 curl_cffi chrome: {ok} de {len(seq)} palavras ok em {time.time()-t0:.0f} s")
+    time.sleep(SL)
+print(f"fase1 {MODE} sl={SL}: {ok} de {len(seq)} palavras ok em {time.time()-t0:.0f} s")
 print(" ".join(seq))
